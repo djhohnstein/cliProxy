@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="98b872e9-14b1-4e06-b311-0f2817156c38" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="GOROOT" path="C:\Go" />
+  <component name="ProjectId" id="1pu0LMcsKkF0bSqMGs4BPi51NYD" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="go.import.settings.migrated" value="true" />
+    <property name="go.sdk.automatically.set" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../keppel-ems-test" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="1043" y="322" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1616875293838">
+      <screen x="0" y="0" width="2560" height="1040" />
+    </state>
+    <state x="1043" y="322" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2560.1040@0.0.2560.1040" timestamp="1616875293838" />
+    <state x="1060" y="275" key="FileChooserDialogImpl" timestamp="1616529670167">
+      <screen x="0" y="0" width="2560" height="1040" />
+    </state>
+    <state x="1060" y="275" key="FileChooserDialogImpl/0.0.2560.1040@0.0.2560.1040" timestamp="1616529670167" />
+    <state x="100" y="100" width="1096" height="840" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog" timestamp="1616017800657">
+      <screen x="0" y="0" width="2560" height="1040" />
+    </state>
+    <state x="100" y="100" width="1096" height="840" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog/0.0.2560.1040@0.0.2560.1040" timestamp="1616017800657" />
+    <state x="100" y="100" width="1096" height="840" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1616017800657">
+      <screen x="0" y="0" width="2560" height="1040" />
+    </state>
+    <state x="100" y="100" width="1096" height="840" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.2560.1040@0.0.2560.1040" timestamp="1616017800657" />
+  </component>
+</project>
