@@ -5,13 +5,13 @@ BUILD=garble -tiny build
 
 BIN ?= /bin/bash
 LOG ?= .history
-VARS ?= -X main.logFile=${LOG} -X main.binName=${BIN}
+VARS ?= -X main.logDir=${LOG} -X main.binName=${BIN}
 
 LD.linux=-ldflags "${VARS}"
 LD.windows=-ldflags "${VARS}  -H windowsgui"
 LD.darwin=${LD.linux}
 
-PLATFORMS=windows linux darwin
+PLATFORMS=linux darwin
 OS=$(word 1, $@)
 
 all: ${PLATFORMS}

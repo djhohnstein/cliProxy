@@ -123,6 +123,6 @@ func run() (err error) {
 
 func main() {
 	if err := run(); err != nil {
-		fmt.Println(err) //DEBUG ONLY
+		// fmt.Println(err) //DEBUG ONLY
 	}
 }
