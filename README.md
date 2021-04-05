@@ -11,4 +11,4 @@ This binary should be placed in a path that'll be searched before the path speci
 
 ## Blog Post
 
-BLOG_HERE
+https://posts.specterops.io/man-in-the-terminal-65476e6165b9
