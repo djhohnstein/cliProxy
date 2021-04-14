@@ -1,4 +1,4 @@
-module cliProxy
+module github.com/djhohnstein/cliProxy
 
 go 1.16
 
